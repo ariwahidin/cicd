@@ -9,8 +9,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Debug Secret Length
-        run: |
-          echo "Length: ${#SSH_PRIVATE_KEY}"
+      - name: Setup SSH
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          cat << 'EOF' > ~/.ssh/id_ed25519
+          $SSH_PRIVATE_KEY
+          EOF
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H 103.111.191.150 >> ~/.ssh/known_hosts
+
